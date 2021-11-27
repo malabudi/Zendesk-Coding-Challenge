@@ -4,7 +4,7 @@ Name: Mohamad Alabudi
 Installation Instructions:
 1. Python 2.7 or 3.6+ is required to run the python file.
 2. This program uses the requests module installed which is supported in python 2.7 & 3.6+.
-3. If the requests module has not been installed, by default running "$ python -m pip install requests" in the terminal of your choosing will install the module. If your python is on a different interpreter such as anaconda3, just replace pip with anaconda3 or your respective interpreter path to install the module
+3. If the requests module has not been installed, assuming your current version of python supports it then running "$ python -m pip install requests" in the terminal of your choosing will install the module. If your python is on a different interpreter such as anaconda3, just replace pip with anaconda3 or your respective interpreter path to install the module
 
 Usage instuctions:
 1. When you run the tickets viewer program, you will be greeted with a welcome message along with the main menu with two options to type into the terminal, "menu" and "exit"
