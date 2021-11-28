@@ -17,4 +17,5 @@ Usage instuctions:
 7. Selecting "3" in the sub menu will display a specific ticket by asking the user to enter a valid ticket id
 8. Finally, to run the unit test file, just run the test_ticket_viewer.py file and that is it
 
+One more thing to note is the first ticket ID available by numerical order is ticket ID 2102.
 Thank you for looking at my ticket viewer program!
