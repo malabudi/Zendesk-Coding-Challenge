@@ -6,10 +6,9 @@ def page_tickets(min, max, tickets_lst):
     Based on what page the user is viewing in the tickets list, prompt them the respective option to view the next page, previous page, or exit the
     tickets viewer all together and return the user's choice to the view_tickets function
     """
-
     view_choice = ""
 
-    # Ask the user if they want to see the next page of the list, go back to the previous page, or stop viewing tickets depending on what page the user is viewing
+    # Ask the user if they want to see the next page of the list, go back to the previous page, or stop viewing tickets depending on what page the user is viewing in the if statement
     if min == 0:
         print("1 - Stop viewing tickets")
         print("2 - Next page")
@@ -28,6 +27,7 @@ def page_tickets(min, max, tickets_lst):
         print("3 - Previous page")
         view_choice = input("")
 
+        # Data validation
         while (view_choice != "1") and (view_choice != "3"):
             print("Invalid input! Please select from the following choices")
 
@@ -40,6 +40,7 @@ def page_tickets(min, max, tickets_lst):
         print("3 - Previous page")
         view_choice = input("")
 
+        # Data validation
         while (view_choice != "1") and (view_choice != "2") and (view_choice != "3"):
             print("Invalid input! Please select from the following choices")
 
@@ -73,7 +74,12 @@ def view_tickets(auth):
     # Let the user know if a problem occurs with fetching the tickets then exit the function
     except:
         print("A problem has occured while attempting to fetch the tickets!")
-        print(f"{requests.get('https://zccmalabudi5807.zendesk.com/api/v2/requests/', auth=auth).status_code}: {requests.get(url = 'https://zccmalabudi5807.zendesk.com/api/v2/requests/', auth=auth).text}")
+        print(f"{response.status_code}")
+
+        # Parse the response json into a dictionary and look into the error key of the object to display the message to the user
+        print(f"{response.json()['error']}")
+
+        return "Bad response"
     
     print("---------------------------------------------------------------------------------------------------------------------------------")
 
@@ -114,22 +120,8 @@ def view_tickets(auth):
             print("\n")
             print("---------------------------------------------------------------------------------------------------------------------------------")
 
-    # Check if the response of the get request was successful then return the respective string for unit test
-    if response.ok:
-        return "Success"
-    else:
-        return "Bad response"
-
-
-def ask_ticket_id():
-    """
-    Ask for and return the ticket id from user input
-    """
-
-    # Ask the user for the ticket id
-    ticket_id = input("Please enter the ticket id: ")
-
-    return ticket_id
+    # After fetching the tickets and the user is done viewing them, return a string saying the response was succesful
+    return "Success"
 
 
 def view_ticket_by_id(ticket_id, auth):
@@ -139,37 +131,34 @@ def view_ticket_by_id(ticket_id, auth):
     them keep entering a ticket id until they enter a valid input
     """
 
-    try:
-        print("Fetching ticket...")
+    print("Fetching ticket...")
 
-        # Check if the ticket is able to be fetched
-        try:
-            # Send a get request to fetch the ticket from the API and use the request key to access the data within that ticket in the json
-            response = requests.get(f"https://zccmalabudi5807.zendesk.com/api/v2/requests/{ticket_id}", auth = auth)
+    # Send a get request to fetch the ticket from the API and use the request key to access the data within that ticket in the json
+    response = requests.get(f"https://zccmalabudi5807.zendesk.com/api/v2/requests/{ticket_id}", auth = auth)
 
-        # If not, let the user know and exit the function
-        except:
-            print("A problem has occured while attempting to fetch the tickets!")
-            print(f"{requests.get('https://zccmalabudi5807.zendesk.com/api/v2/requests/', auth=auth).status_code}: {requests.get('https://zccmalabudi5807.zendesk.com/api/v2/requests/', auth=auth).text}")
+    # If the status code for the get response is not a 200 (OK) then we let the user know immediately there was a problem and exit the function
+    if response.ok == False:
+        print("A problem has occured while requesting the ticket!")
+        print(f"{response.status_code}")
 
-        ticket = response.json()['request']
+        # Parse the response json into a dictionary and look into the error key of the object to display the message to the user
+        print(f"{response.json()['error']}")
 
-        # Display ticket information
-        print("---------------------------------------------------------------------------------------------")
-        print(f"Ticket id:  {ticket['id']}, Status: {ticket['status']}, Priority: {ticket['priority']}, Created At: {ticket['created_at']}")
-        print(f"Subject: {ticket['subject']}")
-        print(f"Description:\n{ticket['description']}")
-        print("---------------------------------------------------------------------------------------------")
-
-    # The user enters an invalid ticket id
-    except:
-        print("Sorry, that ticket id does not exist!")
-
-    # Ticket is succesfully fetched or failed to be fetched, return the respective string for unit test
-    if response.ok:
-        return "Success"
-    else:
         return "Bad response"
+
+
+    # Find the ticket
+    ticket = response.json()['request']
+
+    # Display ticket information
+    print("---------------------------------------------------------------------------------------------")
+    print(f"Ticket id:  {ticket['id']}, Status: {ticket['status']}, Priority: {ticket['priority']}, Created At: {ticket['created_at']}")
+    print(f"Subject: {ticket['subject']}")
+    print(f"Description:\n{ticket['description']}")
+    print("---------------------------------------------------------------------------------------------")
+
+    # After the user successfully fetches the ticket, return success string for the unit test        
+    return "Success"
 
 
 
@@ -226,7 +215,8 @@ def main():
 
                 # View a specific ticket
                 elif(sub_menu_choice == "3"):
-                    ticket_id = ask_ticket_id()
+                    # Ask the user for the ticket id
+                    ticket_id = input("Please enter the ticket id: ")
 
                     # View a ticket by ticket id
                     view_ticket_by_id(ticket_id, auth)
@@ -245,6 +235,7 @@ def main():
             # Ask for user input again and validate the input
             main_choice = ""
             continue                   
+
 
 
 if __name__ == "__main__":
